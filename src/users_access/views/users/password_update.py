@@ -1,9 +1,9 @@
 from rest_framework import status
-from finance.base.auth_api import AuthAPI
-from password_reset.services.services import PasswordResetService
-from ..serializers.create_user_success import UserSerializer
-from ..services.user_service import UserService
-from ..serializers.password_update import PasswordUpdateSerializer
+from main_system.base.auth_api import AuthAPI
+from users_access.services.password_reset_services import PasswordResetService
+from users_access.serializers.users.create_user_success import UserSerializer
+from users_access.services.user_service import UserService
+from users_access.serializers.users.password_update import PasswordUpdateSerializer
 
 
 class UserPasswordUpdateAPI(AuthAPI):
