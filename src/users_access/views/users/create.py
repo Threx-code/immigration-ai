@@ -1,10 +1,10 @@
 from rest_framework import status
-from finance.base.guest_api import GuestAPI
-from otp.services.services import OTPService
-from ..serializers.create_user_success import UserSerializer
-from ..services.user_service import UserService
-from ..serializers.create_user import CreateUserSerializer
-from otp.helpers.otp_base import OTPBaseHandler
+from main_system.base.guest_api import GuestAPI
+from users_access.services.otp_services import OTPService
+from users_access.serializers.users.create_user_success import UserSerializer
+from users_access.services.user_service import UserService
+from users_access.serializers.users.create_user import CreateUserSerializer
+from users_access.helpers.otp_base import OTPBaseHandler
 import logging
 
 logger = logging.getLogger('django')
