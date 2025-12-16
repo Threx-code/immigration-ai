@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from helpers import fields as input_fields
-from ..services.user_service import UserService
+from users_access.services.user_service import UserService
+
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
