@@ -6,5 +6,5 @@ class PasswordResetConfig(AppConfig):
     name = "users_access"
 
     def ready(self):
-        import otp.tasks
+        from .tasks import otp_tasks
         from .signals import user_settings
