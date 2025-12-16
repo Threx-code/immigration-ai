@@ -1,9 +1,9 @@
 import logging
 from rest_framework import status
-from finance.base.guest_api import GuestAPI
-from user_device_session.models import UserDeviceSession
-from ..serializers.login import UserLoginSerializer
-from otp.helpers.otp_base import OTPBaseHandler
+from main_system.base.guest_api import GuestAPI
+from users_access.models.user_device_session import UserDeviceSession
+from users_access.serializers.users.login import UserLoginSerializer
+from users_access.helpers.otp_base import OTPBaseHandler
 from knox.models import AuthToken
 
 logger = logging.getLogger('django')
