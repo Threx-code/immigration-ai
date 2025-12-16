@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.services.service import UserService
+from users_access.services.user_service import UserService
 from helpers import fields as input_fields
 
 
