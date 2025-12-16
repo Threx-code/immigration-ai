@@ -2,7 +2,7 @@
 ## Product Requirements Document (PRD) for Design
 
 **Version:** 1.0  
-**Date:** 2024  
+**Date:** 2025  
 **Audience:** Product Designers, UX Designers, UI Designers  
 **Status:** Design-Ready Requirements
 
@@ -25,7 +25,10 @@
 
 ## 1.1 Product Overview
 
-The Immigration Intelligence Platform is a compliance-aware AI system that helps immigration applicants understand their visa eligibility, prepare required documents, and make informed decisions. The platform provides **decision support** and **information interpretation**—not legal advice—through explainable AI and human-in-the-loop workflows.
+The Immigration Intelligence Platform is a compliance-aware AI system that helps immigration applicants understand 
+their visa eligibility, prepare required documents, and make informed decisions. The platform provides 
+**decision support** and **information interpretation**—not legal advice—through explainable 
+AI and human-in-the-loop workflows.
 
 ## 1.2 Design Goals
 
