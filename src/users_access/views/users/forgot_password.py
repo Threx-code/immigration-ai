@@ -1,14 +1,14 @@
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from finance.base.guest_api import GuestAPI
-from finance.throttles.otp import OTPThrottle
-from otp.services.services import OTPService
-from password_reset.services.services import PasswordResetService
-from ..serializers.login import TwoFactorVerifySerializer
-from ..serializers.password_reset_serializer import PasswordResetSerializer
-from users.services.service import UserService
-from ..serializers.reset_password_serializer import ResetPasswordSerializer
-from otp.helpers.otp_base import OTPBaseHandler
+from main_system.base.guest_api import GuestAPI
+from main_system.throttles.otp import OTPThrottle
+from users_access.services.otp_services import OTPService
+from users_access.services.password_reset_services import PasswordResetService
+from users_access.serializers.users.login import TwoFactorVerifySerializer
+from users_access.serializers.users.password_reset_serializer import PasswordResetSerializer
+from users_access.services.user_service import UserService
+from users_access.serializers.users.reset_password_serializer import ResetPasswordSerializer
+from users_access.helpers.otp_base import OTPBaseHandler
 import logging
 
 
