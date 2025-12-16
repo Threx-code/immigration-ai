@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
-from users.models import User
-from .manager.manager import PasswordResetManager
+from .user import User
+
 
 
 class PasswordReset(models.Model):
@@ -10,8 +10,6 @@ class PasswordReset(models.Model):
     reset_counter = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    objects = PasswordResetManager()
 
     class Meta:
         db_table = 'password_resets'
