@@ -1,7 +1,7 @@
 from django.db import models
 import uuid
 from django.conf import settings
-from .manager.manager import UserSettingsManager
+
 
 class UserSetting(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
@@ -93,7 +93,6 @@ class UserSetting(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    objects = UserSettingsManager()
 
     class Meta:
         db_table = 'user_settings'
