@@ -3,8 +3,7 @@ from typing import Optional
 from django.db.models import DecimalField, Value, Sum
 from django.db.models.functions import Coalesce
 from django.utils.timezone import now
-
-from users.models import User
+from users_access.models.user import User
 
 
 class UserService:
