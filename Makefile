@@ -91,7 +91,7 @@ purge_redis:
 	docker exec -it pfm_api redis-cli flushall
 
 purge_celery:
-	docker exec -it celery_worker celery -A finance purge -f
+	docker exec -it celery_worker celery -A main_system purge -f
 
 key:
 	openssl rand -base64 $(length)
