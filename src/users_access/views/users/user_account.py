@@ -1,21 +1,13 @@
 from datetime import timedelta
-
 from django.utils.timezone import localtime, now
 from rest_framework import status
-from finance.base.auth_api import AuthAPI
-from password_reset.models import PasswordReset
-from ..serializers.account_overview import FinancialSummarySerializer
-from ..services.user_service import UserService
-
+from main_system.base.auth_api import AuthAPI
+from users_access.models.password_reset import PasswordReset
 
 class UserAccountAPI(AuthAPI):
-    serializer_class = FinancialSummarySerializer
 
     def get(self, request):
         user = request.user
-        financial_summary = UserService().get_financial_summary(user)
-        serializer = self.serializer_class(data=financial_summary)
-        serializer.is_valid(raise_exception=True)
 
         user_profile = {
             "first_name": user.first_name,
@@ -38,7 +30,6 @@ class UserAccountAPI(AuthAPI):
 
         user_overview = {
             "profile": user_profile,
-            "financial_summary": serializer.data,
             "security": user_security
         }
 
