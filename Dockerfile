@@ -4,7 +4,7 @@
 ARG PYTHON_VERSION=3.14-slim-bullseye
 FROM python:${PYTHON_VERSION}
 
-LABEL authors="Oluwatosin Amokeodo"
+LABEL authors="Border Link Systems"
 
 # --------------------------
 # Environment variables
@@ -63,7 +63,7 @@ COPY .env .env
 # --------------------------
 ARG SECRET_KEY
 ARG DEBUG=0
-ARG PROJECT_NAME="personal-finance-manager"
+ARG PROJECT_NAME="border-link-imigration-system"
 
 ENV SECRET_KEY=${SECRET_KEY}
 ENV DEBUG=${DEBUG}
