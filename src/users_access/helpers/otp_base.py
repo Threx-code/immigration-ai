@@ -1,6 +1,6 @@
 from django.utils.crypto import get_random_string
-from ..services.services import OTPService
-from ..tasks import send_otp_email
+from users_access.services.otp_services import OTPService
+from users_access.tasks.otp_tasks import send_otp_email
 from helpers.generate_hash import GenerateHash
 
 
