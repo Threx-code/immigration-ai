@@ -2,7 +2,7 @@ from celery import shared_task
 import logging
 from django.conf import settings
 from emails.send import SendEmailService
-from finance.tasks_base import BaseTaskWithMeta
+from main_system.tasks_base import BaseTaskWithMeta
 
 logger = logging.getLogger('django')
 
@@ -42,5 +42,5 @@ def build_email_data(email, first_name, otp):
         "first_name": first_name,
         "email": email,
         "otp": otp,
-        "site_name": getattr(settings, 'SITE_NAME', 'Personal Finance Manager'),
+        "site_name": getattr(settings, 'SITE_NAME', 'Immigration Intelligence Platform'),
     }
