@@ -3,11 +3,11 @@ from django.utils.crypto import get_random_string
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from finance.base.guest_api import GuestAPI
-from finance.throttles.otp import OTPThrottle
+from main_system.base.guest_api import GuestAPI
+from main_system.throttles.otp import OTPThrottle
 from helpers import fields as input_fields
-from otp.services.services import OTPService
-from otp.tasks import send_otp_email
+from users_access.services.otp_services import OTPService
+from users_access.tasks.otp_tasks import send_otp_email
 
 logger = logging.getLogger('django')
 
