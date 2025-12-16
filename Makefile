@@ -1,0 +1,166 @@
+# ============================================================
+# 📦 Project Makefile — Production & Development Ready
+# ============================================================
+
+# ============================================================
+# 🐍 Python Virtual Environment
+# ============================================================
+venv:
+	python3 -m venv .venv
+	. .venv/bin/activate
+
+list:
+	pip list
+
+uninstall_all:
+	pip freeze | xargs pip uninstall -y
+
+install_all:
+	pip install -r requirements.txt
+
+appinstall:
+	pip install $(package)
+
+# ============================================================
+# 🐳 DOCKER — PRODUCTION
+# ============================================================
+build:
+	@echo "📦 Building Docker image (Production)..."
+	docker-compose build
+
+build_progress:
+	docker compose build --progress=plain
+
+freshbuild:
+	docker compose build --no-cache
+
+up:
+	@echo "🚀 Starting production services..."
+	docker compose up -d
+
+down:
+	@echo "🛑 Stopping production services..."
+	docker compose down
+
+restart:
+	make down
+	make up
+
+logs:
+	docker compose logs -f
+
+migrate:
+	@echo "📜 Running database migrations..."
+	docker compose exec -T api python manage.py migrate
+
+shell:
+	docker exec -it pfm_api /bin/sh
+
+# ============================================================
+# 🧪 DOCKER — DEVELOPMENT
+# ============================================================
+dev_build:
+	docker compose -f docker-compose.dev.yml build
+
+dev_progress:
+	docker compose -f docker-compose.dev.yml build --progress=plain
+
+dev_freshbuild:
+	docker compose -f docker-compose.dev.yml build --no-cache
+
+dev:
+	docker compose -f docker-compose.dev.yml up -d
+
+dev_down:
+	docker compose -f docker-compose.dev.yml down
+
+dev_restart:
+	make dev_down
+	make dev
+
+dev_logs:
+	docker compose -f docker-compose.dev.yml logs -f
+
+dev_shell:
+	docker exec -it pfm_api_dev /bin/sh
+
+# ============================================================
+# 🧹 MAINTENANCE & UTILITIES
+# ============================================================
+purge_redis:
+	docker exec -it pfm_api redis-cli flushall
+
+purge_celery:
+	docker exec -it celery_worker celery -A finance purge -f
+
+key:
+	openssl rand -base64 $(length)
+
+agno_upgrade:
+	pip install -U agno --no-cache-dir
+
+ngrok:
+	ngrok http --url=pretty-noble-jaybird.ngrok-free.app 8000
+
+# ============================================================
+# 🪜 GIT HELPERS
+# ============================================================
+commit:
+	@echo "Enter commit message: "; \
+	read msg; \
+	echo "Enter branch name (default: main): "; \
+	read branch; \
+	branch=$${branch:-main}; \
+	for file in $$(git status --porcelain | awk '{print $$2}'); do \
+		git add "$$file"; \
+		git commit -m "$$msg" -- "$$file"; \
+	done; \
+	git push origin "$$branch"
+
+# ============================================================
+# 🐍 Django Helpers
+# ============================================================
+startapp:
+	@if [ -z "$(name)" ]; then \
+  		echo "Error: You must provide the app name. Usage: make startapp name=myapp"; \
+	else \
+		cd src && python manage.py startapp $(name); \
+	fi
+
+migrations:
+	cd src && python manage.py makemigrations
+
+# ============================================================
+# 🐳 Docker Hub Deployment
+# ============================================================
+dhub_build:
+	@echo "🐳 Building Docker image for Docker Hub..."
+	docker build -t threxcode/pfm:latest .
+
+dhub_push:
+	@echo "⬆️  Pushing Docker image to Docker Hub..."
+	docker push threxcode/pfm:latest
+	@echo "✅ Docker image pushed successfully."
+
+# ============================================================
+# 🧽 Cleanup
+# ============================================================
+prune_docker:
+	@echo "🧹 Pruning unused Docker resources..."
+	docker system prune -a --volumes -f
+	@echo "✅ Docker resources pruned successfully."
+
+encode_env:
+	base64 -i .env.production | tr -d '\n' > encoded_env.txt
+
+# ============================================================
+# 📜 Deployment Helper (for manual trigger)
+# ============================================================
+deploy:
+	@echo "🚀 Running manual deployment steps..."
+	docker compose build --no-cache
+	docker compose up -d --remove-orphans
+	docker compose exec -T api python manage.py migrate
+	docker image prune -f && docker builder prune -f
+	@echo "✅ Deployment completed successfully."
+
