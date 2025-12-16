@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OTP</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px;">
+    <div style="max-width: 600px; margin: auto; background-color: white; padding: 20px; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <h2>Hello {{ first_name }},</h2>
+        <p>Please use the One-Time Password (OTP) below:</p>
+        <h1 style="text-align: center; font-size: 36px; color: #4CAF50;">{{ otp }}</h1>
+        <p>This OTP will expire in 10 minutes.</p>
+        <p>If you didn't perform this request, you can safely ignore this email.</p>
+        <br>
+        <p>Thanks,<br>The {{ site_name }} Team</p>
+    </div>
+</body>
+</html>

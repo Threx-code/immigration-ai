@@ -1,0 +1,120 @@
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from finance.base.guest_api import GuestAPI
+from finance.throttles.otp import OTPThrottle
+from otp.services.services import OTPService
+from password_reset.services.services import PasswordResetService
+from ..serializers.login import TwoFactorVerifySerializer
+from ..serializers.password_reset_serializer import PasswordResetSerializer
+from users.services.service import UserService
+from ..serializers.reset_password_serializer import ResetPasswordSerializer
+from otp.helpers.otp_base import OTPBaseHandler
+import logging
+
+
+
+logger = logging.getLogger('django')
+
+OTP_TYPE = 'password_reset'
+MSG_INVALID_OTP = "Invalid or expired OTP."
+MSG_PASSWORD_UPDATED = "Password updated successfully."
+MSG_OTP_SENT = "OTP sent successfully."
+OTP_VERIFIED_SUCCESSFULLY = "OTP verified successfully."
+
+class SendForgotPasswordOTPAPIView(GuestAPI):
+
+    def post(self, request):
+        serializer = PasswordResetSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["email"]
+
+        otp_handler = OTPBaseHandler(otp_type=OTP_TYPE)
+        _, endpoint_token = otp_handler.generate_and_send_otp(user=user)
+
+        return self.api_response(
+            message="OTP resent successfully",
+            data={
+                "email": user.email,
+                "endpoint_token": endpoint_token
+            },
+            status_code=status.HTTP_200_OK
+        )
+
+
+class PasswordResetOTPVerificationAPIView(GuestAPI):
+    permission_classes = (AllowAny,)
+    serializer_class = TwoFactorVerifySerializer
+    throttle_classes = [OTPThrottle]
+
+    def post(self, request, endpoint_token):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        otp = serializer.validated_data.get('otp')
+        otp_service = OTPService()
+
+        try:
+            user = otp_service.verify_otp(otp=otp, endpoint_token=endpoint_token)
+            if not user:
+                logger.error(f"Invalid or expired OTP for endpoint token {endpoint_token}")
+                return self.api_response(
+                    message=MSG_INVALID_OTP,
+                    data={},
+                    status_code=status.HTTP_400_BAD_REQUEST
+                )
+
+            return self.api_response(
+                message=OTP_VERIFIED_SUCCESSFULLY,
+                data={
+                    'email': user.email,
+                    'can_reset': True,
+                    'endpoint_token': endpoint_token
+                },
+                status_code=status.HTTP_200_OK
+            )
+        except Exception as e:
+            logger.error(f"Error during OTP verification: {e}")
+            return self.api_response(
+                message="An error occurred during OTP verification.",
+                data={},
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class CreateNewPasswordTokenAPIView(GuestAPI):
+    serializer_class = ResetPasswordSerializer
+
+    def post(self, request, endpoint_token):
+        serializer = self.serializer_class(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        new_password = serializer.validated_data['new_password']
+        user = serializer.validated_data['email']
+
+        otp_service = OTPService()
+        otp_entry = otp_service.get_by_endpoint_and_user(endpoint_token=endpoint_token, user=user)
+
+        if not otp_entry:
+            logger.error(
+                f"Password reset failed. Invalid token or user mismatch. "
+                f"Endpoint Token={endpoint_token}, User={user.email}"
+            )
+
+            return self.api_response(
+                message="Invalid endpoint token or user.",
+                data={},
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        user_service = UserService()
+        user_service.update_password(user, new_password)
+
+        PasswordResetService().create(user=user)
+
+        logger.info(f"Password successfully updated for user={user.email}")
+
+        return self.api_response(
+            message="Password updated successfully.",
+            data={'email': user.email},
+            status_code=status.HTTP_200_OK
+        )
