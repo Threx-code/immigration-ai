@@ -1,19 +1,22 @@
 from typing import Optional
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import BaseUserManager
-from django.db import IntegrityError
+from django.db import transaction
+from users_access.models.user import User
 from helpers import fields as input_fields
 import logging
 
 logger = logging.getLogger('django')
 
 
-class UserManager(BaseUserManager):
+class UserRepository:
 
-    def create_user(self, email, password, first_name, last_name):
-        try:
-            user = self.model(
-                email=self.normalize_email(email),
+    @staticmethod
+    def create_user(email, password, first_name, last_name):
+        with transaction.atomic():
+            normalized_email = BaseUserManager.normalize_email(email)
+            user = User.objects.create(
+                email=normalized_email,
                 first_name=first_name,
                 last_name=last_name,
                 role=input_fields.USER
@@ -23,121 +26,80 @@ class UserManager(BaseUserManager):
             user.is_active = True
             user.is_staff = False
             user.is_superuser = False
-            user.save(using=self._db)
+            user.save(using=User.objects._db)
+            user.full_clean()
             return user
-        except IntegrityError as e:
-            logger.error(f"Integrity error while creating user {email}: {e}")
-        except Exception as e:
-            logger.error(f"Error while creating user {email}: {e}")
-        return None
 
+    @staticmethod
+    def create_superuser(email, password, first_name, last_name):
+        user = UserRepository.create_user(email, password, first_name, last_name)
+        user.role = input_fields.ADMIN
+        user.is_superuser = True
+        user.is_staff = True
+        user.full_clean()
+        user.save()
+        return user
 
-    def create_superuser(self, email: str, password: str, first_name, last_name):
-        try:
-            user = self.create_user(email, password, first_name, last_name)
-            user.role = input_fields.ADMIN
-            user.is_superuser = True
-            user.is_staff = True
-            user.save(using=self._db)
-            return user
-        except Exception as e:
-            logger.error(f"Error while creating superuser {email}: {e}")
-        return None
-
-
-    def update_user(self, user, **fields):
-        try:
+    @staticmethod
+    def update_user(user, **fields):
+        with transaction.atomic():
             for key, value in fields.items():
                 setattr(user, key, value)
-            user.save(using=self._db)
+            user.save(using=User.objects._db)
+            user.full_clean()
             return user
-        except Exception as e:
-            logger.error(f"Error while updating user {user.email}: {e}")
-        return None
 
-    def update_avatar(self, user, avatar):
-        try:
+    @staticmethod
+    def update_avatar(user, avatar):
+        with transaction.atomic():
+            old_avatar = user.avatar
             user.avatar = avatar
-            user.save(using=self._db)
+            user.full_clean()
+            user.save()
+            if old_avatar and old_avatar.name and old_avatar.name != user.avatar.name:
+                old_avatar.delete(save=False)
             return user
-        except Exception as e:
-            logger.error(f"Error while updating avatar for user {user.email}: {e}")
-        return None
 
+    @staticmethod
+    def remove_avatar(user):
+        with transaction.atomic():
+            old_avatar = user.avatar
+            user.avatar = None
+            user.full_clean()
+            user.save()
+            if old_avatar and old_avatar.name:
+                old_avatar.delete(save=False)
+            return user
 
-    def update_names(self, user, first_name: Optional[str], last_name: Optional[str]):
-        try:
+    @staticmethod
+    def update_names(user, first_name: Optional[str], last_name: Optional[str]):
+        with transaction.atomic():
             user.first_name = first_name if first_name else user.first_name
             user.last_name = last_name if last_name else user.last_name
-            user.save(using=self._db)
+            user.full_clean()
+            user.save()
             return user
-        except Exception as e:
-            logger.error(f"Error while updating full name for user {user.email}: {e}")
-        return None
 
-
-    def activate_user(self, user):
-        try:
+    @staticmethod
+    def activate_user(user):
+        with transaction.atomic():
             user.is_verified = True
-            user.save(using=self._db)
+            user.full_clean()
+            user.save()
             return user
-        except Exception as e:
-            logger.error(f"Error while activating user {user.email}: {e}")
-        return None
 
-
-    def update_password(self, user, password):
-        try:
+    @staticmethod
+    def update_password(user, password):
+        with transaction.atomic():
             user.password = make_password(password)
-            user.save(using=self._db)
+            user.full_clean()
+            user.save()
             return user
-        except Exception as e:
-            logger.error(f"Error while updating password for user {user.email}: {e}")
-        return None
 
-
-    def connect_bvn(self, user, bvn):
-        try:
-            user.bvn = bvn
-            user.save(using=self._db)
-            return user
-        except Exception as e:
-            logger.error(f"Error while connecting BVN for user {user.email}: {e}")
-        return None
-
-
-    def is_verified(self, user):
-        try:
+    @staticmethod
+    def is_verified(user):
+        with transaction.atomic():
             user.is_verified = True
-            user.save(using=self._db)
+            user.full_clean()
+            user.save()
             return user
-        except Exception as e:
-            logger.error(f"Error while verifying user {user.email}: {e}")
-        return None
-
-
-    def get_all(self):
-        try:
-            return self.get_queryset().all()
-        except Exception as e:
-            logger.error(f"Error while getting all users: {e}")
-            return []
-
-    def email_exists(self, email: str) -> bool:
-        try:
-            return self.get_queryset().filter(email__iexact=email).exists()
-        except Exception as e:
-            logger.error(f"Error while checking if email exists: {e}")
-            return False
-
-    def get_by_email(self, email: str):
-        try:
-            return self.get_queryset().get(email__iexact=email)
-        except Exception as e:
-            logger.error(f"Error while getting user with email {email}: {e}")
-        return None
-
-
-
-
-
