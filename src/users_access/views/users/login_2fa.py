@@ -106,7 +106,7 @@ class TwoFactorVerificationAPIView(KnoxLoginView):
         # Ensure previous device session for same fingerprint is removed
         UserDeviceSession.objects.filter(user=user, fingerprint=fingerprint_hash).delete()
 
-        return UserDeviceSession.objects.create_device_session(
+        return UserDeviceSession.repository.create_device_session(
             user=user,
             fingerprint=fingerprint_hash,
             ip_address=ip_address,
