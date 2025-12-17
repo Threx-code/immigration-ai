@@ -9,4 +9,4 @@ User = get_user_model()
 @receiver(post_save, sender=User)
 def create_user_setting(sender, instance, created, **kwargs):
     if created:
-        UserSetting.objects.create_user_setting(user_id=instance.id)
+        UserSetting.repository.create_user_setting(user_id=instance.id)
