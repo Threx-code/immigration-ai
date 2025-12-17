@@ -101,3 +101,12 @@ class UserSetting(models.Model):
 
     def __str__(self):
         return f"Settings for {self.user.email}"
+
+
+# Import managers after UserSetting class definition to avoid circular imports
+from users_access.repositories.user_setting_repository import UserSettingRepository
+from users_access.selectors.user_setting_selector import UserSettingSelector
+
+# Assign managers to UserSetting model
+UserSetting.add_to_class('repository', UserSettingRepository())
+UserSetting.add_to_class('selector', UserSettingSelector())
