@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
 from helpers import fields as input_fields
 from users_access.services.user_service import UserService
 
@@ -14,18 +13,14 @@ class UserLoginSerializer(serializers.Serializer):
         if not email or not password:
             raise serializers.ValidationError(input_fields.EMAIL_PASSWORD_REQUIRED)
 
-        if UserService().email_exists(email):
-            user = authenticate(self.context.get(input_fields.REQUEST), email=email, password=password)
-            if not user:
-                raise serializers.ValidationError(input_fields.INVALID_CREDENTIALS)
-            if not user.is_active:
-                raise serializers.ValidationError(input_fields.USER_NOT_ACTIVE)
-            if not user.is_verified:
-                raise serializers.ValidationError(input_fields.EMAIL_NOT_VERIFIED)
-            attrs[input_fields.USER] = user
-        else:
+        if not UserService().email_exists(email):
             raise serializers.ValidationError(input_fields.INVALID_CREDENTIALS)
 
+        user, error = UserService.login(email=email, password=password, request=self.context.get(input_fields.REQUEST))
+        if error:
+            raise serializers.ValidationError(error)
+
+        attrs[input_fields.USER] = user
         return attrs
 
 
