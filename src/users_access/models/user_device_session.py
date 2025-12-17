@@ -48,3 +48,12 @@ class UserDeviceSession(models.Model):
 
     def __str__(self):
         return f"DeviceSession(user={self.user.email}, session_id={self.session_id})"
+
+
+# Import managers after UserDeviceSession class definition to avoid circular imports
+from users_access.repositories.user_device_session_repository import UserDeviceSessionRepository
+from users_access.selectors.user_device_session_selector import UserDeviceSessionSelector
+
+# Assign managers to UserDeviceSession model
+UserDeviceSession.add_to_class('repository', UserDeviceSessionRepository())
+UserDeviceSession.add_to_class('selector', UserDeviceSessionSelector())
