@@ -1,0 +1,570 @@
+{
+  "countries": [
+    {
+      "code": "CA",
+      "name": "Canada",
+      "has_states": true,
+      "is_jurisdiction": true,
+      "states_provinces": [
+        {
+          "code": "AB",
+          "name": "Alberta",
+          "has_nomination_program": true
+        },
+        {
+          "code": "BC",
+          "name": "British Columbia",
+          "has_nomination_program": true
+        },
+        {
+          "code": "MB",
+          "name": "Manitoba",
+          "has_nomination_program": true
+        },
+        {
+          "code": "NB",
+          "name": "New Brunswick",
+          "has_nomination_program": true
+        },
+        {
+          "code": "NL",
+          "name": "Newfoundland and Labrador",
+          "has_nomination_program": true
+        },
+        {
+          "code": "NS",
+          "name": "Nova Scotia",
+          "has_nomination_program": true
+        },
+        {
+          "code": "ON",
+          "name": "Ontario",
+          "has_nomination_program": true
+        },
+        {
+          "code": "PE",
+          "name": "Prince Edward Island",
+          "has_nomination_program": true
+        },
+        {
+          "code": "QC",
+          "name": "Quebec",
+          "has_nomination_program": false
+        },
+        {
+          "code": "SK",
+          "name": "Saskatchewan",
+          "has_nomination_program": true
+        },
+        {
+          "code": "NT",
+          "name": "Northwest Territories",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NU",
+          "name": "Nunavut",
+          "has_nomination_program": false
+        },
+        {
+          "code": "YT",
+          "name": "Yukon",
+          "has_nomination_program": true
+        }
+      ]
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "has_states": true,
+      "is_jurisdiction": true,
+      "states_provinces": [
+        {
+          "code": "NSW",
+          "name": "New South Wales",
+          "has_nomination_program": true
+        },
+        {
+          "code": "VIC",
+          "name": "Victoria",
+          "has_nomination_program": true
+        },
+        {
+          "code": "QLD",
+          "name": "Queensland",
+          "has_nomination_program": true
+        },
+        {
+          "code": "WA",
+          "name": "Western Australia",
+          "has_nomination_program": true
+        },
+        {
+          "code": "SA",
+          "name": "South Australia",
+          "has_nomination_program": true
+        },
+        {
+          "code": "TAS",
+          "name": "Tasmania",
+          "has_nomination_program": true
+        },
+        {
+          "code": "ACT",
+          "name": "Australian Capital Territory",
+          "has_nomination_program": true
+        },
+        {
+          "code": "NT",
+          "name": "Northern Territory",
+          "has_nomination_program": true
+        }
+      ]
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "has_states": true,
+      "is_jurisdiction": true,
+      "states_provinces": [
+        {
+          "code": "AL",
+          "name": "Alabama",
+          "has_nomination_program": false
+        },
+        {
+          "code": "AK",
+          "name": "Alaska",
+          "has_nomination_program": false
+        },
+        {
+          "code": "AZ",
+          "name": "Arizona",
+          "has_nomination_program": false
+        },
+        {
+          "code": "AR",
+          "name": "Arkansas",
+          "has_nomination_program": false
+        },
+        {
+          "code": "CA",
+          "name": "California",
+          "has_nomination_program": false
+        },
+        {
+          "code": "CO",
+          "name": "Colorado",
+          "has_nomination_program": false
+        },
+        {
+          "code": "CT",
+          "name": "Connecticut",
+          "has_nomination_program": false
+        },
+        {
+          "code": "DE",
+          "name": "Delaware",
+          "has_nomination_program": false
+        },
+        {
+          "code": "FL",
+          "name": "Florida",
+          "has_nomination_program": false
+        },
+        {
+          "code": "GA",
+          "name": "Georgia",
+          "has_nomination_program": false
+        },
+        {
+          "code": "HI",
+          "name": "Hawaii",
+          "has_nomination_program": false
+        },
+        {
+          "code": "ID",
+          "name": "Idaho",
+          "has_nomination_program": false
+        },
+        {
+          "code": "IL",
+          "name": "Illinois",
+          "has_nomination_program": false
+        },
+        {
+          "code": "IN",
+          "name": "Indiana",
+          "has_nomination_program": false
+        },
+        {
+          "code": "IA",
+          "name": "Iowa",
+          "has_nomination_program": false
+        },
+        {
+          "code": "KS",
+          "name": "Kansas",
+          "has_nomination_program": false
+        },
+        {
+          "code": "KY",
+          "name": "Kentucky",
+          "has_nomination_program": false
+        },
+        {
+          "code": "LA",
+          "name": "Louisiana",
+          "has_nomination_program": false
+        },
+        {
+          "code": "ME",
+          "name": "Maine",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MD",
+          "name": "Maryland",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MA",
+          "name": "Massachusetts",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MI",
+          "name": "Michigan",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MN",
+          "name": "Minnesota",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MS",
+          "name": "Mississippi",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MO",
+          "name": "Missouri",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MT",
+          "name": "Montana",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NE",
+          "name": "Nebraska",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NV",
+          "name": "Nevada",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NH",
+          "name": "New Hampshire",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NJ",
+          "name": "New Jersey",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NM",
+          "name": "New Mexico",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NY",
+          "name": "New York",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NC",
+          "name": "North Carolina",
+          "has_nomination_program": false
+        },
+        {
+          "code": "ND",
+          "name": "North Dakota",
+          "has_nomination_program": false
+        },
+        {
+          "code": "OH",
+          "name": "Ohio",
+          "has_nomination_program": false
+        },
+        {
+          "code": "OK",
+          "name": "Oklahoma",
+          "has_nomination_program": false
+        },
+        {
+          "code": "OR",
+          "name": "Oregon",
+          "has_nomination_program": false
+        },
+        {
+          "code": "PA",
+          "name": "Pennsylvania",
+          "has_nomination_program": false
+        },
+        {
+          "code": "RI",
+          "name": "Rhode Island",
+          "has_nomination_program": false
+        },
+        {
+          "code": "SC",
+          "name": "South Carolina",
+          "has_nomination_program": false
+        },
+        {
+          "code": "SD",
+          "name": "South Dakota",
+          "has_nomination_program": false
+        },
+        {
+          "code": "TN",
+          "name": "Tennessee",
+          "has_nomination_program": false
+        },
+        {
+          "code": "TX",
+          "name": "Texas",
+          "has_nomination_program": false
+        },
+        {
+          "code": "UT",
+          "name": "Utah",
+          "has_nomination_program": false
+        },
+        {
+          "code": "VT",
+          "name": "Vermont",
+          "has_nomination_program": false
+        },
+        {
+          "code": "VA",
+          "name": "Virginia",
+          "has_nomination_program": false
+        },
+        {
+          "code": "WA",
+          "name": "Washington",
+          "has_nomination_program": false
+        },
+        {
+          "code": "WV",
+          "name": "West Virginia",
+          "has_nomination_program": false
+        },
+        {
+          "code": "WI",
+          "name": "Wisconsin",
+          "has_nomination_program": false
+        },
+        {
+          "code": "WY",
+          "name": "Wyoming",
+          "has_nomination_program": false
+        },
+        {
+          "code": "DC",
+          "name": "District of Columbia",
+          "has_nomination_program": false
+        }
+      ]
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "has_states": false,
+      "is_jurisdiction": true,
+      "states_provinces": []
+    },
+    {
+      "code": "NZ",
+      "name": "New Zealand",
+      "has_states": false,
+      "is_jurisdiction": true,
+      "states_provinces": []
+    },
+    {
+      "code": "NG",
+      "name": "Nigeria",
+      "has_states": false,
+      "is_jurisdiction": false,
+      "states_provinces": []
+    },
+    {
+      "code": "ZA",
+      "name": "South Africa",
+      "has_states": false,
+      "is_jurisdiction": false,
+      "states_provinces": []
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "has_states": true,
+      "is_jurisdiction": false,
+      "states_provinces": [
+        {
+          "code": "AP",
+          "name": "Andhra Pradesh",
+          "has_nomination_program": false
+        },
+        {
+          "code": "AR",
+          "name": "Arunachal Pradesh",
+          "has_nomination_program": false
+        },
+        {
+          "code": "AS",
+          "name": "Assam",
+          "has_nomination_program": false
+        },
+        {
+          "code": "BR",
+          "name": "Bihar",
+          "has_nomination_program": false
+        },
+        {
+          "code": "CT",
+          "name": "Chhattisgarh",
+          "has_nomination_program": false
+        },
+        {
+          "code": "GA",
+          "name": "Goa",
+          "has_nomination_program": false
+        },
+        {
+          "code": "GJ",
+          "name": "Gujarat",
+          "has_nomination_program": false
+        },
+        {
+          "code": "HR",
+          "name": "Haryana",
+          "has_nomination_program": false
+        },
+        {
+          "code": "HP",
+          "name": "Himachal Pradesh",
+          "has_nomination_program": false
+        },
+        {
+          "code": "JK",
+          "name": "Jammu and Kashmir",
+          "has_nomination_program": false
+        },
+        {
+          "code": "JH",
+          "name": "Jharkhand",
+          "has_nomination_program": false
+        },
+        {
+          "code": "KA",
+          "name": "Karnataka",
+          "has_nomination_program": false
+        },
+        {
+          "code": "KL",
+          "name": "Kerala",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MP",
+          "name": "Madhya Pradesh",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MH",
+          "name": "Maharashtra",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MN",
+          "name": "Manipur",
+          "has_nomination_program": false
+        },
+        {
+          "code": "ML",
+          "name": "Meghalaya",
+          "has_nomination_program": false
+        },
+        {
+          "code": "MZ",
+          "name": "Mizoram",
+          "has_nomination_program": false
+        },
+        {
+          "code": "NL",
+          "name": "Nagaland",
+          "has_nomination_program": false
+        },
+        {
+          "code": "OR",
+          "name": "Odisha",
+          "has_nomination_program": false
+        },
+        {
+          "code": "PB",
+          "name": "Punjab",
+          "has_nomination_program": false
+        },
+        {
+          "code": "RJ",
+          "name": "Rajasthan",
+          "has_nomination_program": false
+        },
+        {
+          "code": "SK",
+          "name": "Sikkim",
+          "has_nomination_program": false
+        },
+        {
+          "code": "TN",
+          "name": "Tamil Nadu",
+          "has_nomination_program": false
+        },
+        {
+          "code": "TG",
+          "name": "Telangana",
+          "has_nomination_program": false
+        },
+        {
+          "code": "TR",
+          "name": "Tripura",
+          "has_nomination_program": false
+        },
+        {
+          "code": "UP",
+          "name": "Uttar Pradesh",
+          "has_nomination_program": false
+        },
+        {
+          "code": "UT",
+          "name": "Uttarakhand",
+          "has_nomination_program": false
+        },
+        {
+          "code": "WB",
+          "name": "West Bengal",
+          "has_nomination_program": false
+        }
+      ]
+    }
+  ]
+}
+
