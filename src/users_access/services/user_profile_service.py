@@ -1,0 +1,143 @@
+from typing import Optional
+from users_access.models.user_profile import UserProfile
+from users_access.repositories.user_profile_repository import UserProfileRepository
+from users_access.selectors.user_profile_selector import UserProfileSelector
+from users_access.selectors.country_selector import CountrySelector
+from users_access.selectors.state_province_selector import StateProvinceSelector
+import logging
+
+logger = logging.getLogger('django')
+
+
+class UserProfileService:
+
+    @staticmethod
+    def get_profile(user):
+        """Get user profile, create if doesn't exist."""
+        try:
+            profile = UserProfileSelector.get_by_user(user)
+            return profile
+        except UserProfile.DoesNotExist:
+            try:
+                profile = UserProfileRepository.create_profile(user=user)
+                return profile
+            except Exception as e:
+                logger.error(f"Error creating profile for user {user.email}: {e}")
+                return None
+        except Exception as e:
+            logger.error(f"Error getting profile for user {user.email}: {e}")
+            return None
+
+    @staticmethod
+    def update_profile(user, **fields):
+        """Update user profile."""
+        try:
+            profile = UserProfileSelector.get_by_user(user)
+            return UserProfileRepository.update_profile(profile, **fields)
+        except UserProfile.DoesNotExist:
+            try:
+                profile = UserProfileRepository.create_profile(user=user)
+                return UserProfileRepository.update_profile(profile, **fields)
+            except Exception as e:
+                logger.error(f"Error creating/updating profile for user {user.email}: {e}")
+                return None
+        except Exception as e:
+            logger.error(f"Error updating profile for user {user.email}: {e}")
+            return None
+
+    @staticmethod
+    def update_names(user, first_name=None, last_name=None):
+        """Update user names."""
+        try:
+            profile = UserProfileSelector.get_by_user(user)
+            return UserProfileRepository.update_names(profile, first_name, last_name)
+        except UserProfile.DoesNotExist:
+            try:
+                profile = UserProfileRepository.create_profile(user=user)
+                return UserProfileRepository.update_names(profile, first_name, last_name)
+            except Exception as e:
+                logger.error(f"Error creating/updating names for user {user.email}: {e}")
+                return None
+        except Exception as e:
+            logger.error(f"Error updating names for user {user.email}: {e}")
+            return None
+
+    @staticmethod
+    def update_nationality(user, country_code: str, state_code: Optional[str] = None):
+        """Update user nationality."""
+        try:
+            country = CountrySelector.get_by_code(country_code)
+            if not country:
+                logger.error(f"Country with code {country_code} not found")
+                return None
+
+            profile = UserProfileSelector.get_by_user(user)
+        except UserProfile.DoesNotExist:
+            try:
+                profile = UserProfileRepository.create_profile(user=user)
+            except Exception as e:
+                logger.error(f"Error creating profile for user {user.email}: {e}")
+                return None
+        except Exception as e:
+            logger.error(f"Error getting profile for user {user.email}: {e}")
+            return None
+
+        try:
+            state = None
+            if state_code:
+                state = StateProvinceSelector.get_by_code(country_code, state_code)
+                if not state:
+                    logger.warning(f"State {state_code} not found for country {country_code}")
+
+            return UserProfileRepository.update_nationality(profile, country, state)
+        except Exception as e:
+            logger.error(f"Error updating nationality for user {user.email}: {e}")
+            return None
+
+    @staticmethod
+    def update_consent(user, consent_given: bool):
+        """Update GDPR consent."""
+        try:
+            profile = UserProfileSelector.get_by_user(user)
+            return UserProfileRepository.update_consent(profile, consent_given)
+        except UserProfile.DoesNotExist:
+            try:
+                profile = UserProfileRepository.create_profile(user=user)
+                return UserProfileRepository.update_consent(profile, consent_given)
+            except Exception as e:
+                logger.error(f"Error creating/updating consent for user {user.email}: {e}")
+                return None
+        except Exception as e:
+            logger.error(f"Error updating consent for user {user.email}: {e}")
+            return None
+
+    @staticmethod
+    def update_avatar(user, avatar):
+        """Update profile avatar."""
+        try:
+            profile = UserProfileSelector.get_by_user(user)
+            return UserProfileRepository.update_avatar(profile, avatar)
+        except UserProfile.DoesNotExist:
+            try:
+                profile = UserProfileRepository.create_profile(user=user)
+                return UserProfileRepository.update_avatar(profile, avatar)
+            except Exception as e:
+                logger.error(f"Error creating/updating avatar for user {user.email}: {e}")
+                return None
+        except Exception as e:
+            logger.error(f"Error updating avatar for user {user.email}: {e}")
+            return None
+
+    @staticmethod
+    def remove_avatar(user):
+        """Remove profile avatar."""
+        try:
+            profile = UserProfileSelector.get_by_user(user)
+            return UserProfileRepository.remove_avatar(profile)
+        except UserProfile.DoesNotExist:
+            logger.warning(f"Profile not found for user {user.email}, cannot remove avatar")
+            return None
+        except Exception as e:
+            logger.error(f"Error removing avatar for user {user.email}: {e}")
+            return None
+
