@@ -3,17 +3,21 @@ from django.utils.timezone import localtime, now
 from rest_framework import status
 from main_system.base.auth_api import AuthAPI
 from users_access.models.password_reset import PasswordReset
+from users_access.services.user_profile_service import UserProfileService
 
 class UserAccountAPI(AuthAPI):
 
     def get(self, request):
         user = request.user
+        profile = UserProfileService.get_profile(user)
 
         user_profile = {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
+            "first_name": profile.first_name if profile else None,
+            "last_name": profile.last_name if profile else None,
             "email": user.email,
-            "avatar": user.avatar.url if user.avatar else None,
+            "avatar": profile.avatar.url if profile and profile.avatar else None,
+            "nationality": profile.nationality.code if profile and profile.nationality else None,
+            "nationality_name": profile.nationality.name if profile and profile.nationality else None,
             "email_verified": user.is_verified,
             "member_since": self._format_datetime(user.created_at),
             "last_login": self._format_datetime(user.last_login) if user.last_login else None,
