@@ -1,9 +1,6 @@
 from django.db import transaction
 from django.utils import timezone
 from users_access.models import UserDeviceSession
-import logging
-
-logger = logging.getLogger("django")
 
 
 class UserDeviceSessionRepository:
@@ -22,7 +19,6 @@ class UserDeviceSessionRepository:
             )
             device_session.full_clean()
             device_session.save()
-            logger.info(f"Device session created for user {user.id} with session ID {session_id}")
             return device_session
 
     @staticmethod
@@ -30,7 +26,6 @@ class UserDeviceSessionRepository:
         with transaction.atomic():
             session.revoked = True
             session.save(update_fields=["revoked"])
-            logger.info(f"Session {session.session_id} revoked")
             return True
 
     @staticmethod
@@ -40,7 +35,6 @@ class UserDeviceSessionRepository:
                 revoked_at=timezone.now(), revoked=True
             )
             UserDeviceSession.objects.filter(user=user, revoked=False).update(revoked=True)
-            logger.info(f"Revoked all sessions for user {user.id}")
             return True
 
     @staticmethod
