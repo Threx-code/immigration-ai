@@ -130,11 +130,8 @@ class CookieManager:
         # 3. Invalidate device session
         if device_session:
             try:
-                device_session.revoked = True
-                device_session.last_active = timezone.now()
-                device_session.revoked_at = timezone.now()
-                device_session.save(update_fields=["revoked", "last_active", "revoked_at"])
-
+                from users_access.services.user_device_session_service import UserDeviceSessionService
+                UserDeviceSessionService.revoke_session(session_id=device_session.session_id)
                 logger.info(f"Device session {device_session.id} marked inactive.")
             except Exception as e:
                 logger.warning(f"Failed to update device session: {e}")
