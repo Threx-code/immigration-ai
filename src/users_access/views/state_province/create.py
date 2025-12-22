@@ -1,12 +1,14 @@
 from rest_framework import status
 from main_system.base.auth_api import AuthAPI
+from main_system.permissions.is_admin_or_staff import IsAdminOrStaff
 from users_access.services.state_province_service import StateProvinceService
 from users_access.serializers.state_province.create import StateProvinceCreateSerializer
 from users_access.serializers.state_province.read import StateProvinceSerializer
 
 
 class StateProvinceCreateAPI(AuthAPI):
-    """Create a new state/province."""
+    """Create a new state/province. Only admin/staff can access."""
+    permission_classes = [IsAdminOrStaff]
 
     def post(self, request):
         serializer = StateProvinceCreateSerializer(data=request.data)
