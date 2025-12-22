@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.utils import timezone
 from knox.auth import TokenAuthentication
-from users_access.models.user_device_session import UserDeviceSession
+from users_access.services.user_device_session_service import UserDeviceSessionService
 from main_system.cookies.manager import CookieManager
 import logging
 
@@ -37,7 +37,7 @@ class LocalDeviceSessionRefreshMiddleware:
         if not all([access_token, fingerprint]):
             return response
 
-        device_session = UserDeviceSession.objects.get_by_session_id(session_id, fingerprint)
+        device_session = UserDeviceSessionService.get_by_session_id(session_id=session_id, fingerprint=fingerprint)
 
         try:
             auth = TokenAuthentication()
