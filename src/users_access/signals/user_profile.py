@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from users_access.models.user_profile import UserProfile
+from users_access.services.user_profile_service import UserProfileService
 
 
 User = get_user_model()
@@ -14,6 +14,6 @@ def create_user_profile(sender, instance, created, **kwargs):
     This ensures every user has a profile for GDPR-separated PII storage.
     """
     if created:
-        # Create profile if it doesn't exist
-        UserProfile.objects.get_or_create(user=instance)
+        # Create profile if it doesn't exist (service handles existence check)
+        UserProfileService.get_profile(user=instance)
 
