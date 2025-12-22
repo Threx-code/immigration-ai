@@ -1,5 +1,6 @@
 from rest_framework import status
 from main_system.base.auth_api import AuthAPI
+from main_system.permissions.is_admin_or_staff import IsAdminOrStaff
 from users_access.services.state_province_service import StateProvinceService
 from users_access.serializers.state_province.update_delete import (
     StateProvinceUpdateSerializer,
@@ -9,16 +10,15 @@ from users_access.serializers.state_province.read import StateProvinceSerializer
 
 
 class StateProvinceUpdateAPI(AuthAPI):
-    """Update a state/province by ID."""
+    """Update a state/province by ID. Only admin/staff can access."""
+    permission_classes = [IsAdminOrStaff]
 
     def patch(self, request, id):
         serializer = StateProvinceUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        from users_access.selectors.state_province_selector import StateProvinceSelector
-        try:
-            state = StateProvinceSelector.get_by_id(id)
-        except Exception:
+        state = StateProvinceService.get_by_id(id)
+        if not state:
             return self.api_response(
                 message=f"State/Province with ID '{id}' not found.",
                 data=None,
@@ -45,7 +45,8 @@ class StateProvinceUpdateAPI(AuthAPI):
 
 
 class StateProvinceDeleteAPI(AuthAPI):
-    """Delete a state/province."""
+    """Delete a state/province. Only admin/staff can access."""
+    permission_classes = [IsAdminOrStaff]
 
     def delete(self, request, id):
         serializer = StateProvinceDeleteSerializer(data={'id': id})
