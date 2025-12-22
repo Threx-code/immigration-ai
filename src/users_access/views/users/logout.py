@@ -12,7 +12,8 @@ class BaseLogoutMixin:
 
     def _revoke_tokens(self, request):
         try:
-            UserDeviceSession.repository.revoke_all_for_user(user=request.user)
+            from users_access.services.user_device_session_service import UserDeviceSessionService
+            UserDeviceSessionService.revoke_all_for_user(user=request.user)
             AuthToken.objects.filter(user=request.user).delete()
         except Exception as e:
             logger.exception(f"Failed to revoke tokens on logout: {e}")
