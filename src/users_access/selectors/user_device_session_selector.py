@@ -17,3 +17,13 @@ class UserDeviceSessionSelector:
         if fingerprint:
             qs = qs.filter(fingerprint=fingerprint)
         return qs.first()
+
+    @staticmethod
+    def get_by_fingerprint(user, fingerprint):
+        """Get device session by user and fingerprint."""
+        return UserDeviceSession.objects.filter(
+            user=user,
+            fingerprint=fingerprint,
+            revoked=False,
+            revoked_at__isnull=True
+        ).first()
