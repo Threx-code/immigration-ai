@@ -1,5 +1,6 @@
 from rest_framework import status
 from main_system.base.auth_api import AuthAPI
+from main_system.permissions.is_admin_or_staff import IsAdminOrStaff
 from users_access.services.country_service import CountryService
 from users_access.serializers.country.update_delete import (
     CountryUpdateSerializer,
@@ -9,7 +10,8 @@ from users_access.serializers.country.read import CountrySerializer
 
 
 class CountryUpdateAPI(AuthAPI):
-    """Update a country by ID."""
+    """Update a country by ID. Only admin/staff can access."""
+    permission_classes = [IsAdminOrStaff]
 
     def patch(self, request, id):
         serializer = CountryUpdateSerializer(data=request.data)
@@ -43,7 +45,8 @@ class CountryUpdateAPI(AuthAPI):
 
 
 class CountryDeleteAPI(AuthAPI):
-    """Delete a country and all its states/provinces."""
+    """Delete a country and all its states/provinces. Only admin/staff can access."""
+    permission_classes = [IsAdminOrStaff]
 
     def delete(self, request, id):
         serializer = CountryDeleteSerializer(data={'id': id})
