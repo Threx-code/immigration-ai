@@ -45,6 +45,18 @@ class UserDeviceSessionService:
             return False
 
     @staticmethod
+    def delete_by_fingerprint(user, fingerprint):
+        """Delete device session by fingerprint."""
+        try:
+            session = UserDeviceSessionSelector.get_by_fingerprint(user, fingerprint)
+            if session:
+                session.delete()
+            return True
+        except Exception as e:
+            logger.exception(f"Error deleting session by fingerprint for user {user.id}: {e}")
+            return False
+
+    @staticmethod
     def revoke_all_for_user(user):
         try:
             return UserDeviceSessionRepository.revoke_all_for_user(user)
