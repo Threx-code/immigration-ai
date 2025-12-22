@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.utils import timezone
 from knox.auth import TokenAuthentication
-from users_access.models.user_device_session import UserDeviceSession
+from users_access.services.user_device_session_service import UserDeviceSessionService
 from main_system.cookies.manager import CookieManager
 import logging
 
@@ -37,7 +37,7 @@ class ProductionDeviceSessionRefreshMiddleware:
         if not session_id or not access_token or not fingerprint:
             return response
 
-        device_session = UserDeviceSession.objects.get_by_session_id(session_id, fingerprint)
+        device_session = UserDeviceSessionService.get_by_session_id(session_id=session_id, fingerprint=fingerprint)
         if not device_session or device_session.revoked:
             cookie_mgr.expire_cookies_and_tokens(token_obj=access_token, device_session=device_session)
             return response
@@ -69,7 +69,7 @@ class ProductionDeviceSessionRefreshMiddleware:
             return response
 
         # Mark device session active
-        UserDeviceSession.objects.mark_active(session_id)
+        UserDeviceSessionService.mark_active(session_id=session_id)
 
         # Refresh MFA verified cookie if valid
         if mfa_verified == "true":
