@@ -58,9 +58,8 @@ class TwoFactorVerificationAPIView(KnoxLoginView):
     # ---------- Internal Helpers ----------
 
     def _verify_otp_or_2fa(self, endpoint_token, otp, is_2fa):
-        otp_service = OTPService()
         if is_2fa:
-            login_otp = otp_service.get_by_endpoint(endpoint_token=endpoint_token)
+            login_otp = OTPService.get_by_endpoint(endpoint_token=endpoint_token)
             if not login_otp:
                 return None
             user = login_otp.user
@@ -68,7 +67,7 @@ class TwoFactorVerificationAPIView(KnoxLoginView):
             if not secret or not TOTPAuthenticator.verify_totp(secret=secret, otp=otp, valid_window=1):
                 return None
         else:
-            user = otp_service.verify_otp(otp=otp, endpoint_token=endpoint_token)
+            user = OTPService.verify_otp(otp=otp, endpoint_token=endpoint_token)
         return user
 
     def _update_user_login_info(self, user):
@@ -104,9 +103,10 @@ class TwoFactorVerificationAPIView(KnoxLoginView):
         }
 
         # Ensure previous device session for same fingerprint is removed
-        UserDeviceSession.objects.filter(user=user, fingerprint=fingerprint_hash).delete()
+        from users_access.services.user_device_session_service import UserDeviceSessionService
+        UserDeviceSessionService.delete_by_fingerprint(user, fingerprint_hash)
 
-        return UserDeviceSession.repository.create_device_session(
+        return UserDeviceSessionService.create_device_session(
             user=user,
             fingerprint=fingerprint_hash,
             ip_address=ip_address,
