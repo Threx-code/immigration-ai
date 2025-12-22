@@ -12,10 +12,9 @@ class UserPasswordUpdateAPI(AuthAPI):
     def patch(self, request):
         serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        service = UserService()
-        user = service.update_password(request.user, serializer.validated_data.get('password'))
+        user = UserService.update_password(request.user, serializer.validated_data.get('password'))
 
-        PasswordResetService().create(user=user)
+        PasswordResetService.create_password_reset(user=user)
 
         return self.api_response(
             message="User password updated successfully.",
