@@ -51,10 +51,9 @@ class PasswordResetOTPVerificationAPIView(GuestAPI):
         serializer.is_valid(raise_exception=True)
 
         otp = serializer.validated_data.get('otp')
-        otp_service = OTPService()
 
         try:
-            user = otp_service.verify_otp(otp=otp, endpoint_token=endpoint_token)
+            user = OTPService.verify_otp(otp=otp, endpoint_token=endpoint_token)
             if not user:
                 logger.error(f"Invalid or expired OTP for endpoint token {endpoint_token}")
                 return self.api_response(
@@ -91,8 +90,7 @@ class CreateNewPasswordTokenAPIView(GuestAPI):
         new_password = serializer.validated_data['new_password']
         user = serializer.validated_data['email']
 
-        otp_service = OTPService()
-        otp_entry = otp_service.get_by_endpoint_and_user(endpoint_token=endpoint_token, user=user)
+        otp_entry = OTPService.get_by_endpoint_and_user(endpoint_token=endpoint_token, user=user)
 
         if not otp_entry:
             logger.error(
@@ -106,10 +104,9 @@ class CreateNewPasswordTokenAPIView(GuestAPI):
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 
-        user_service = UserService()
-        user_service.update_password(user, new_password)
+        UserService.update_password(user, new_password)
 
-        PasswordResetService().create(user=user)
+        PasswordResetService.create_password_reset(user=user)
 
         logger.info(f"Password successfully updated for user={user.email}")
 
