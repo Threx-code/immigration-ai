@@ -6,3 +6,4 @@ from .country import Country
 from .state_province import StateProvince
 from .password_reset import PasswordReset
 from .user_device_session import UserDeviceSession
+from .notification import Notification
