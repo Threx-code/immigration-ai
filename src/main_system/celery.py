@@ -8,6 +8,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main_system.settings")
 django.setup()
 
 from main_system.tasks_base import BaseTaskWithMeta  # Import AFTER django.setup()
+from main_system.celery_beat_schedule import CELERY_BEAT_SCHEDULE
 
 app = Celery("main_system")
 app.config_from_object("django.conf:settings", namespace="CELERY")
@@ -15,3 +16,7 @@ app.autodiscover_tasks()
 
 # Set custom base task
 app.Task = BaseTaskWithMeta
+
+# Configure Celery Beat schedule
+app.conf.beat_schedule = CELERY_BEAT_SCHEDULE
+app.conf.timezone = 'UTC'
