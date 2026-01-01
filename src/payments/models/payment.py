@@ -27,6 +27,7 @@ class Payment(models.Model):
         ('stripe', 'Stripe'),
         ('paypal', 'PayPal'),
         ('bank_transfer', 'Bank Transfer'),
+        ('paystack', 'Paystack'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
