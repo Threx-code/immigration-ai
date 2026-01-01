@@ -122,17 +122,22 @@ class IngestionService:
             http_status_code=fetch_result['status_code']
         )
         
-        # 3. Extract text
+        # 3. Extract text for hashing
         extracted_text = ingestion_system.extract_text(
             fetch_result['content'],
             fetch_result['content_type']
         )
         
-        # 4. Compute hash
+        # 4. Extract metadata (if method exists)
+        metadata = {}
+        if hasattr(ingestion_system, 'extract_metadata'):
+            metadata = ingestion_system.extract_metadata(fetch_result['content'])
+        
+        # 5. Compute hash
         from helpers.file_hashing import ContentHash
         content_hash = ContentHash.compute_sha256(extracted_text)
         
-        # 5. Check if version already exists for this source document
+        # 6. Check if version already exists for this source document
         # We check by source_document to ensure each URL maintains its own version history
         existing_versions = DocumentVersionSelector.get_by_source_document(source_doc)
         for existing_version in existing_versions:
@@ -140,20 +145,21 @@ class IngestionService:
                 logger.info(f"Content unchanged for {url}, hash: {content_hash[:8]}...")
                 return result
         
-        # 6. Create new document version
+        # 7. Create new document version with metadata
         new_version = DocumentVersionRepository.create_document_version(
             source_document=source_doc,
-            raw_text=extracted_text
+            raw_text=extracted_text,
+            metadata=metadata
         )
         result['new_version'] = True
         
-        # 7. Get previous version for diff
+        # 8. Get previous version for diff
         previous_version = DocumentVersionSelector.get_latest_by_source_document(source_doc)
         change_detected = False
         change_type = None
         
         if previous_version and previous_version.id != new_version.id:
-            # 8. Create diff
+            # 9. Create diff
             diff_text = IngestionService._compute_diff(
                 previous_version.raw_text,
                 new_version.raw_text
@@ -170,7 +176,7 @@ class IngestionService:
             result['diff_created'] = True
             change_detected = True
         
-        # 9. Trigger AI Rule Parsing (as per implementation.md flow)
+        # 10. Trigger AI Rule Parsing (as per implementation.md flow)
         # Parse rules for new document versions (especially when change is detected)
         if new_version:
             try:
