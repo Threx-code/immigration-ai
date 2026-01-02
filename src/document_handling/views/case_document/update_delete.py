@@ -15,15 +15,8 @@ class CaseDocumentUpdateAPI(AuthAPI):
         serializer = CaseDocumentUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Handle document_type_id separately if provided
-        update_fields = {}
-        if 'status' in serializer.validated_data:
-            update_fields['status'] = serializer.validated_data['status']
-        
-        if 'document_type_id' in serializer.validated_data:
-            from rules_knowledge.selectors.document_type_selector import DocumentTypeSelector
-            document_type = DocumentTypeSelector.get_by_id(serializer.validated_data['document_type_id'])
-            update_fields['document_type'] = document_type
+        # Extract update fields - service will handle document_type_id conversion
+        update_fields = serializer.validated_data.copy()
 
         case_document = CaseDocumentService.update_case_document(id, **update_fields)
 
