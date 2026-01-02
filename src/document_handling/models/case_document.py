@@ -65,6 +65,19 @@ class CaseDocument(models.Model):
         help_text="Current status of the document"
     )
     
+    # OCR and Classification fields
+    ocr_text = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Extracted text from OCR processing"
+    )
+    
+    classification_confidence = models.FloatField(
+        null=True,
+        blank=True,
+        help_text="Confidence score for document type classification (0.0 to 1.0)"
+    )
+    
     uploaded_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
