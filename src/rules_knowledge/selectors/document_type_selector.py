@@ -15,6 +15,11 @@ class DocumentTypeSelector:
         return DocumentType.objects.filter(is_active=True).order_by('code')
 
     @staticmethod
+    def get_all_active():
+        """Get all active document types (alias for get_active)."""
+        return DocumentTypeSelector.get_active()
+
+    @staticmethod
     def get_by_code(code: str):
         """Get document type by code."""
         return DocumentType.objects.get(code=code)
