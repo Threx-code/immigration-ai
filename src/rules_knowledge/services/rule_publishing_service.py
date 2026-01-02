@@ -27,6 +27,8 @@ from rules_knowledge.selectors.visa_rule_version_selector import VisaRuleVersion
 from rules_knowledge.services.visa_rule_version_service import VisaRuleVersionService
 from users_access.services.notification_service import NotificationService
 from users_access.tasks.email_tasks import send_rule_change_notification_email_task
+from ai_decisions.services.vector_db_service import VectorDBService
+from ai_decisions.services.embedding_service import EmbeddingService
 
 logger = logging.getLogger('django')
 
@@ -138,6 +140,14 @@ class RulePublishingService:
             RulePublishingService._notify_users_of_rule_change(
                 visa_type=visa_type,
                 rule_version=published_version
+            )
+            
+            # Step 10: Update vector DB with embeddings (for RAG retrieval)
+            # This is done asynchronously to not block rule publishing
+            RulePublishingService._update_vector_db_for_document_version(
+                document_version=parsed_rule.document_version,
+                visa_code=parsed_rule.visa_code,
+                jurisdiction=visa_type.jurisdiction
             )
             
             logger.info(
@@ -421,6 +431,85 @@ class RulePublishingService:
         logger.info(
             f"Rule change notification will be triggered via signal for visa type {visa_type.id}"
         )
+    
+    @staticmethod
+    def _update_vector_db_for_document_version(
+        document_version,
+        visa_code: Optional[str] = None,
+        jurisdiction: Optional[str] = None
+    ):
+        """
+        Update vector DB with embeddings for a document version.
+        
+        This method:
+        1. Chunks the document text
+        2. Generates embeddings
+        3. Stores chunks with embeddings in vector DB
+        
+        Args:
+            document_version: DocumentVersion instance
+            visa_code: Optional visa code for metadata filtering
+            jurisdiction: Optional jurisdiction for metadata filtering
+        """
+        try:
+            if not document_version or not document_version.raw_text:
+                logger.warning(f"No text content for document version {document_version.id if document_version else 'None'}")
+                return
+            
+            # Check if chunks already exist
+            existing_chunks = VectorDBService.get_chunks_by_document_version(document_version)
+            if existing_chunks:
+                logger.info(
+                    f"Chunks already exist for document version {document_version.id}, skipping embedding generation"
+                )
+                return
+            
+            # Step 1: Chunk the document text
+            chunks = EmbeddingService.chunk_document(document_version.raw_text)
+            if not chunks:
+                logger.warning(f"No chunks generated for document version {document_version.id}")
+                return
+            
+            # Step 2: Generate embeddings
+            chunk_texts = [chunk['text'] for chunk in chunks]
+            embeddings = EmbeddingService.generate_embeddings(chunk_texts)
+            
+            if len(embeddings) != len(chunks):
+                logger.error(
+                    f"Mismatch: {len(chunks)} chunks but {len(embeddings)} embeddings for "
+                    f"document version {document_version.id}"
+                )
+                return
+            
+            # Step 3: Add metadata to chunks
+            for chunk, embedding in zip(chunks, embeddings):
+                chunk_metadata = chunk.get('metadata', {})
+                if visa_code:
+                    chunk_metadata['visa_code'] = visa_code
+                if jurisdiction:
+                    chunk_metadata['jurisdiction'] = jurisdiction
+                chunk_metadata['document_version_id'] = str(document_version.id)
+                chunk_metadata['source_url'] = document_version.source_document.source_url
+                chunk['metadata'] = chunk_metadata
+            
+            # Step 4: Store in vector DB
+            VectorDBService.store_chunks(
+                document_version=document_version,
+                chunks=chunks,
+                embeddings=embeddings
+            )
+            
+            logger.info(
+                f"Successfully stored {len(chunks)} chunks with embeddings for document version {document_version.id}"
+            )
+            
+        except Exception as e:
+            # Don't fail rule publishing if vector DB update fails
+            logger.error(
+                f"Error updating vector DB for document version "
+                f"{document_version.id if document_version else 'None'}: {e}",
+                exc_info=True
+            )
     
     @staticmethod
     def publish_approved_validation_task(
