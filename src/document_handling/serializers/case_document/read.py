@@ -9,6 +9,7 @@ class CaseDocumentSerializer(serializers.ModelSerializer):
     document_type_code = serializers.CharField(source='document_type.code', read_only=True)
     document_type_name = serializers.CharField(source='document_type.name', read_only=True)
     checks_count = serializers.SerializerMethodField()
+    file_url = serializers.SerializerMethodField()
     
     class Meta:
         model = CaseDocument
@@ -24,7 +25,10 @@ class CaseDocumentSerializer(serializers.ModelSerializer):
             'file_size',
             'mime_type',
             'status',
+            'ocr_text',
+            'classification_confidence',
             'checks_count',
+            'file_url',
             'uploaded_at',
             'updated_at',
         ]
@@ -35,6 +39,11 @@ class CaseDocumentSerializer(serializers.ModelSerializer):
         if hasattr(obj, 'checks'):
             return obj.checks.count()
         return 0
+    
+    def get_file_url(self, obj):
+        """Get URL to access the file."""
+        from document_handling.services.case_document_service import CaseDocumentService
+        return CaseDocumentService.get_file_url(str(obj.id))
 
 
 class CaseDocumentListSerializer(serializers.ModelSerializer):
