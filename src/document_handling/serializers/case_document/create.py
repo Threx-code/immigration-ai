@@ -4,11 +4,14 @@ from rules_knowledge.selectors.document_type_selector import DocumentTypeSelecto
 
 
 class CaseDocumentCreateSerializer(serializers.Serializer):
-    """Serializer for creating a case document."""
+    """Serializer for creating a case document with file upload."""
     
     case_id = serializers.UUIDField(required=True)
     document_type_id = serializers.UUIDField(required=True)
-    file_name = serializers.CharField(required=True, max_length=255)
+    file = serializers.FileField(required=True, allow_empty_file=False)
+    
+    # Optional fields (can be auto-detected from file)
+    file_name = serializers.CharField(required=False, max_length=255, allow_blank=True)
     file_size = serializers.IntegerField(required=False, allow_null=True, min_value=0)
     mime_type = serializers.CharField(required=False, max_length=100, allow_null=True, allow_blank=True)
 
@@ -35,20 +38,27 @@ class CaseDocumentCreateSerializer(serializers.Serializer):
             raise serializers.ValidationError(f"Document type with ID '{value}' not found.")
         return value
 
-    def validate_file_name(self, value):
-        """Validate file name."""
-        value = value.strip()
-        if not value:
-            raise serializers.ValidationError("File name cannot be empty.")
-        # Check file extension
-        allowed_extensions = ['.pdf', '.jpg', '.jpeg', '.png']
-        if not any(value.lower().endswith(ext) for ext in allowed_extensions):
-            raise serializers.ValidationError("File must be PDF, JPG, or PNG.")
-        return value
-
-    def validate_file_size(self, value):
-        """Validate file size (max 10MB)."""
-        if value and value > 10 * 1024 * 1024:  # 10MB in bytes
-            raise serializers.ValidationError("File size cannot exceed 10MB.")
-        return value
+    def validate(self, attrs):
+        """Validate file and extract metadata."""
+        file = attrs.get('file')
+        if not file:
+            raise serializers.ValidationError({"file": "File is required."})
+        
+        # Auto-detect file metadata if not provided
+        if not attrs.get('file_name'):
+            attrs['file_name'] = file.name
+        
+        if not attrs.get('file_size'):
+            attrs['file_size'] = file.size
+        
+        if not attrs.get('mime_type') and hasattr(file, 'content_type'):
+            attrs['mime_type'] = file.content_type
+        
+        # Validate file using FileStorageService
+        from document_handling.services.file_storage_service import FileStorageService
+        is_valid, error = FileStorageService.validate_file(file)
+        if not is_valid:
+            raise serializers.ValidationError({"file": error})
+        
+        return attrs
 
